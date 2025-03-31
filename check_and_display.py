@@ -6,12 +6,14 @@ sizes = [10, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700
 interval_double = "-1000000.001 1000000.001"
 interval_int = "1000000 1000000"
 paths = [
-    "C:/Users/Alex/Desktop/labs/parallel_programming/multiplier/start_matrix1.txt",
-    "C:/Users/Alex/Desktop/labs/parallel_programming/multiplier/start_matrix2.txt",
-    "C:/Users/Alex/Desktop/labs/parallel_programming/multiplier/end_matrix.txt"
+    "C:/Users/Alex/Desktop/labs/parallel_programming/multiplier/input_data/start_matrix1.txt",
+    "C:/Users/Alex/Desktop/labs/parallel_programming/multiplier/input_data/start_matrix2.txt",
+    "C:/Users/Alex/Desktop/labs/parallel_programming/multiplier/output_data/end_matrix.txt"
 ]
 
 executable_path = "C:/Users/Alex/Desktop/labs/parallel_programming/multiplier/out/build/x64-release/multiplier.exe"
+
+graphic_path = "C:/Users/Alex/Desktop/labs/parallel_programming/multiplier/output_data/result.png"
 
 def load_matrix(filepath):
     with open(filepath, "r") as f:
@@ -54,9 +56,9 @@ for size in sizes:
         C_numpy = np.dot(A, B)
 
         if np.allclose(C_numpy, C_cpp):
-            print(f"✅ Матрицы совпадают для {size}x{size}!")
+            print(f"✅ Matrices IS equal for {size} * {size}!")
         else:
-            print(f"❌ Расхождение результатов для {size}x{size}!")
+            print(f"❌ Matrices is NOT equal for {size} * {size}!")
 
         lines = stdout_data.strip().split("\n")
         last_line = lines[-1]
@@ -67,16 +69,18 @@ for size in sizes:
         y.append(float(time_value))
         
     time /= NUMBER_OF_EXPERIMENTS
-    print(f"Среднее для {size} время выполнения: ", {time})
+    print(f"Average for {size} * {size} time of the execution: ", {time})
     x_avg.append(size)
     y_avg.append(time)
 
 plt.scatter(x, y, marker='o', color='b', s = 40)
 plt.scatter(x_avg, y_avg, marker='x', color='r', s = 80)
 
-plt.title('График зависимости скорости подсчета от размера матриц')
-plt.xlabel('Размер матрицы, size * size')
-plt.ylabel('Время выолнения, sec')
+plt.title('Graph of the dependence of the counting speed on the size of the matrices')
+plt.xlabel('Matrix sizes, size * size')
+plt.ylabel('Time of execution, sec')
 plt.grid(True)  
-plt.legend()  
+plt.legend()
+
+plt.savefig(graphic_path)
 plt.show()

@@ -12,8 +12,15 @@ using namespace std;
 
 template <typename T>
 auto generate_random_matrix(size_t rows, size_t cols, T min_val, T max_val) noexcept {
+	/*
+	Gets the dimensions of the matrix for generation, 
+	the lower and upper bounds of generation, 
+	checks the types at the boundaries - if it is of type int, 
+	then the function is used to generate integers, if twice, 
+	then the function is used to generate numbers with a dot.
+	*/
 	if (!is_arithmetic_v<T>) {
-		throw invalid_argument("Диапазон должен быть числовым.");
+		throw invalid_argument("The range must be numeric.");
 	}
 
 	random_device rd;
@@ -40,14 +47,18 @@ auto generate_random_matrix(size_t rows, size_t cols, T min_val, T max_val) noex
 		return matrix;
 	}
 	else {
-		throw invalid_argument("Incorrect type of argument");
+		throw invalid_argument("Incorrect type of argument.");
 	}
 }
 
 template <typename T>
 vector<vector<T>> multiply_two_matrices(vector<vector<T>> matrix1, vector<vector<T>> matrix2) {
+	/*
+	It gets two matrices, checks their fullness and size, 
+	and then multiplies the elements, resulting in a new matrix.
+	*/
 	if (matrix1.empty() || matrix2.empty()) {
-		throw invalid_argument("There is no matrix");
+		throw invalid_argument("There is no matrix.");
 	}
 	int rows1 = matrix1.size();
 	int cols1 = matrix1[0].size();
@@ -55,8 +66,9 @@ vector<vector<T>> multiply_two_matrices(vector<vector<T>> matrix1, vector<vector
 	int cols2 = matrix2[0].size();
 	cout << cols1 << "  " << rows2 << endl;
 	if (cols1 != rows2) {
-		throw invalid_argument("Bad sizes of matrices");
+		throw invalid_argument("Bad sizes of matrices.");
 	}
+
 	vector<vector<T>> result(rows1, vector<T>(cols2, 0));
 	for (int i = 0; i < rows1; ++i) {
 		for (int j = 0; j < cols2; ++j) {
@@ -70,6 +82,10 @@ vector<vector<T>> multiply_two_matrices(vector<vector<T>> matrix1, vector<vector
 
 template <typename T>
 vector<vector<T>> reading_matrix(string path) {
+	/* 
+	Receives the path to the .txt file as input, 
+	opens it and converts what is read there into a matrix.
+	*/
 	ifstream file(path);
 	vector<vector<T>> matrix;
 
@@ -85,12 +101,20 @@ vector<vector<T>> reading_matrix(string path) {
 			matrix.push_back(row);
 		}
 	}
+	else {
+		throw runtime_error("File opening error.");
+	}
 
 	return matrix;
 }
 
 template <typename T>
 void write_matrix(string path, vector<vector<T>> matrix) {
+	/*
+	Receives the input path to the .txt file and the matrix, 
+	checks the received data,
+	writes the matrix to the file line by line separated by a space.
+	*/
 	if (matrix.empty()) {
 		throw invalid_argument("There is no matrix");
 	}
@@ -98,7 +122,7 @@ void write_matrix(string path, vector<vector<T>> matrix) {
 	ofstream file(path);
 
 	if (!file.is_open()) {
-		throw runtime_error("Ошибка открытия файла.");
+		throw runtime_error("File opening error.");
 	}
 
 	int rows = matrix.size();
@@ -116,6 +140,16 @@ void write_matrix(string path, vector<vector<T>> matrix) {
 
 template <typename T>
 void matrix_processing(string first_matrix_path, string second_matrix_path, string result_path, int rows1, int cols1, int rows2, int cols2, T min, T max) {
+	/*
+	Gets the paths of the first, second and final matrices, 
+	the number of rows and columns in the first and second, 
+	the minimum number and maximum when generating matrix elements, 
+		
+	after which it generates matrices for the passed parameters, 
+	writes them to the corresponding files, reads them from the same files, 
+	multiplies the matrices, writes the result to the file for the final matrix, 
+	outputs the execution time to the terminal.
+	*/
 	auto matrix1 = generate_random_matrix<T>(rows1, cols1, min, max);
 	write_matrix<T>(first_matrix_path, matrix1);
 	auto matrix2 = generate_random_matrix<T>(rows2, cols2, min, max);
@@ -132,12 +166,20 @@ void matrix_processing(string first_matrix_path, string second_matrix_path, stri
 }
 
 int main(int argc, char* argv[]) {
-	// cd cd Desktop/labs/parallel_programming/multiplier/out/build/x64-debug
-	// multiplier C:\Users\Alex\Desktop\labs\parallel_programming\multiplier\start_matrix1.txt C:\Users\Alex\Desktop\labs\parallel_programming\multiplier\start_matrix2.txt C:\Users\Alex\Desktop\labs\parallel_programming\multiplier\end_matrix.txt
-
-	// OR
-
-	// C:\Users\Alex\Desktop\labs\parallel_programming\multiplier\out\build\x64-release\multiplier.exe C:\Users\Alex\Desktop\labs\parallel_programming\multiplier\start_matrix1.txt C:\Users\Alex\Desktop\labs\parallel_programming\multiplier\start_matrix2.txt C:\Users\Alex\Desktop\labs\parallel_programming\multiplier\end_matrix.txt
+	// C:\Users\Alex\Desktop\labs\parallel_programming\multiplier\out\build\x64-release\multiplier.exe C:\Users\Alex\Desktop\labs\parallel_programming\multiplier\input_data\start_matrix1.txt C:\Users\Alex\Desktop\labs\parallel_programming\multiplier\input_data\start_matrix2.txt C:\Users\Alex\Desktop\labs\parallel_programming\multiplier\output_data\end_matrix.txt
+	/*
+	When running through the console, it receives 
+	as input the path to the executable file compiled from this .cpp, 
+	the path to the file with the first matrix, 
+	the path to the file with the second matrix, 
+	and the path to the file with the resulting matrix. 
+	
+	Next, it checks for the presence of the passed arguments, 
+	then requests the sizes of 1 and 2 matrices and 
+	the range of number generation, checks them for compliance, 
+	checks the type of numbers in the range, 
+	and processes the matrices with the matrix_processing function.
+	*/
 	if (argc < 4) {
 		throw "Don't try to trick me, Tony, don't even try";
 	}
@@ -156,14 +198,15 @@ int main(int argc, char* argv[]) {
 	cin >> cols2;
 
 	if (cols1 != rows2) {
-		throw invalid_argument("Bad sizes of matrices");
+		throw invalid_argument("Bad sizes of matrices.");
 	}
 
 	cout << "\nPrint the range: \n" << flush;
 	string lb, ub;
 	cin >> lb >> ub;
 
-	bool is_double = lb.find('.') != std::string::npos || ub.find('.') != std::string::npos;
+	bool is_double = lb.find('.') != string::npos || ub.find('.') != string::npos; 
+
 	string path_fm = argv[1];
 	string path_sm = argv[2];
 	string result_m = argv[3];
