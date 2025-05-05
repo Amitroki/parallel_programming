@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 sizes = [10, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000]
-interval_double = "-1000000.001 1000000.001"
+interval_double = "-100000.001 100000.001"
 interval_int = "1000000 1000000"
 paths = [
     "C:/Users/Alex/Desktop/labs/parallel_programming/multiplier/input_data/start_matrix1.txt",

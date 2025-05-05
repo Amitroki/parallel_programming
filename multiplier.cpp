@@ -7,6 +7,7 @@
 #include <random>
 #include <stdexcept>
 #include <iomanip>
+#include <omp.h>
 
 using namespace std;
 
@@ -53,31 +54,35 @@ auto generate_random_matrix(size_t rows, size_t cols, T min_val, T max_val) noex
 
 template <typename T>
 vector<vector<T>> multiply_two_matrices(vector<vector<T>> matrix1, vector<vector<T>> matrix2) {
-	/*
-	It gets two matrices, checks their fullness and size, 
-	and then multiplies the elements, resulting in a new matrix.
-	*/
-	if (matrix1.empty() || matrix2.empty()) {
-		throw invalid_argument("There is no matrix.");
-	}
-	int rows1 = matrix1.size();
-	int cols1 = matrix1[0].size();
-	int rows2 = matrix2.size();
-	int cols2 = matrix2[0].size();
-	cout << cols1 << "  " << rows2 << endl;
-	if (cols1 != rows2) {
-		throw invalid_argument("Bad sizes of matrices.");
-	}
+    /*
+    It gets two matrices, checks their fullness and size, 
+    and then multiplies the elements, resulting in a new matrix.
+    */
+    if (matrix1.empty() || matrix2.empty()) {
+        throw invalid_argument("There is no matrix.");
+    }
+    int rows1 = matrix1.size();
+    int cols1 = matrix1[0].size();
+    int rows2 = matrix2.size();
+    int cols2 = matrix2[0].size();
+    cout << cols1 << "  " << rows2 << endl;
+    if (cols1 != rows2) {
+        throw invalid_argument("Bad sizes of matrices.");
+    }
 
-	vector<vector<T>> result(rows1, vector<T>(cols2, 0));
-	for (int i = 0; i < rows1; ++i) {
-		for (int j = 0; j < cols2; ++j) {
-			for (int k = 0; k < cols1; ++k) {
-				result[i][j] += matrix1[i][k] * matrix2[k][j];
-			}
-		}
-	}
-	return result;
+    vector<vector<T>> result(rows1, vector<T>(cols2, 0));
+    
+    #pragma omp parallel for shared(matrix1, matrix2, result) schedule(static)
+    for (int i = 0; i < rows1; ++i) {
+        for (int j = 0; j < cols2; ++j) {
+            T sum = 0;
+            for (int k = 0; k < cols1; ++k) {
+                sum += matrix1[i][k] * matrix2[k][j];
+            }
+            result[i][j] = sum;
+        }
+    }
+    return result;
 }
 
 template <typename T>
