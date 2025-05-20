@@ -18,7 +18,11 @@ if(MSVC)
     endif()
 endif()
 
+find_package(OpenMP REQUIRED)
+
 add_executable(multiplier "multiplier.cpp")
+
+target_link_libraries(multiplier PRIVATE OpenMP::OpenMP_CXX)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET multiplier PROPERTY CXX_STANDARD 20)
